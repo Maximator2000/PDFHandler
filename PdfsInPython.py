@@ -1,4 +1,5 @@
 from PyPDF2 import PdfFileReader,PdfFileWriter,PdfFileMerger
+import os
 
 def get_meta(path):
     with open(path,'rb') as f:
@@ -15,14 +16,26 @@ def extract_text(path):
         print(text)
         print(type(text))
 
-def splitPDF(path):
+def splitPDF(path,output_path):
     with open(path,'rb') as f:
         pdf =PdfFileReader(f)
         for page in range(pdf.getNumPages()):
             writer=PdfFileWriter()
             writer.addPage(pdf.getPage(page))
-            with open(f"{page}.pdf","wb") as f_out:
+            with open(f"{output_path}\{page}.pdf","wb") as f_out:
                 writer.write(f_out)
+def splitByPages(path, output_path,new_name,valid_pages):
+    if len(valid_pages)>0:
+        with open (path,'rb') as f:
+            writer=PdfFileWriter()
+            reader=PdfFileReader(path)
+            for pageNum in range(reader.getNumPages()):
+                if(pageNum in valid_pages):
+                    writer.addPage(reader.getPage(pageNum))
+            with open(f"{output_path}\{new_name}.pdf",'wb') as f_out:
+                writer.write(f_out)
+    else:
+        print("NO valid pages")
 
 def mergePDF(input_paths,output_path):
      writer=PdfFileWriter()
